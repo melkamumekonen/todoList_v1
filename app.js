@@ -165,23 +165,21 @@ app.post("/delete", function (req, res) {
       });
     });
   } else {
-    List.findOne({
-      name: list
-    }, (err, doc) => {
-      if (err) {
-        console.log("Error deleting item from custom list !");
-      } else {
 
-        console.log("Before deleting items custom list : " + doc.items + "before!");
-        doc.items = doc.items.filter((e) => {
-          return e._id != req.body.item
-        });
-        console.log("After deleting items custom list : " + doc.items + "after!");
-        doc.save().then(() => {
+    List.findOneAndUpdate({
+        name: list
+      }, {
+        $pull: {
+          items: {
+            _id: req.body.item
+          }
+        }
+      }, (err, docs) => {
+        if (!err)
           res.redirect("/" + list);
-        });
       }
-    });
+
+    );
   }
 });
 
